@@ -12,3 +12,10 @@ model test {
   id   String @unique @db.VarChar(255)
   name String
 }
+
+model Menu {
+  id     String   @id @default(cuid())
+  name   String
+  date   DateTime
+  active Boolean
+}
