@@ -14,7 +14,7 @@ type DayMenu = {
 export async function GET() {
     const results: Array<DayMenu> = []
 
-    for (let i = 6; i < 7; i++) {
+    for (let i = 0; i < 7; i++) {
         const date = new Date()
         date.setDate(date.getDate() + i)
 
@@ -39,6 +39,7 @@ async function getEntrees(date: Date): Promise<DayMenu> {
         lunch: true,
     })
     const lunchEntrees = pullEntreesFromRows(lunchResults)
+    if (date.getDay() === 0 && lunchEntrees.length !== 0) lunchEntrees.push("Brunch")
 
     const dinnerResults = await fetchRowsInTable({
         date,
