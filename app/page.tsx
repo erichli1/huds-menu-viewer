@@ -58,21 +58,23 @@ export default function Home() {
     const [data, setData] = useState<Array<DayMenu>>([])
 
     if (loading) {
-        axios.get("/api/dynamic-menu").then((res) => {
-            const processedDays = res.data.body.map((jsonDay: any, index: number) => {
-                const day: DayMenu = {
-                    id: index,
-                    date: new Date(jsonDay.date),
-                    lunch: jsonDay.lunch,
-                    dinner: jsonDay.dinner,
-                }
-                return day
-            })
-            console.log(processedDays)
+        axios
+            .get("/api/dynamic-menu")
+            .then((res) => {
+                const processedDays = res.data.body.map((jsonDay: any, index: number) => {
+                    const day: DayMenu = {
+                        id: index,
+                        date: new Date(jsonDay.date),
+                        lunch: jsonDay.lunch,
+                        dinner: jsonDay.dinner,
+                    }
+                    return day
+                })
 
-            setData(processedDays)
-            setLoading(false)
-        })
+                setData(processedDays)
+                setLoading(false)
+            })
+            .catch((err) => console.log(err.message))
 
         //     // setData([{ id: 1, date: new Date(), lunch: ["chicken", "soup"], dinner: ["beef", "brisket"] }])
         //     // setLoading(false)
