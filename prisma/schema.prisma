@@ -14,8 +14,8 @@ model test {
 }
 
 model Menu {
-  id     String   @id @default(cuid())
-  name   String
-  date   DateTime
-  active Boolean
+  id    String   @id @default(cuid())
+  name  String
+  date  DateTime
+  lunch Boolean
 }
