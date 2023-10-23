@@ -2,16 +2,19 @@ import { NextResponse } from "next/server"
 import axios, { AxiosError } from "axios"
 import { load } from "cheerio"
 
+const HUDS_MENU_TYPE = 14 // 14 is default, 05 is smaller view with only entrees
+
 type DayMenu = {
     date: Date
     lunch: Array<string>
     dinner: Array<string>
+    soup: Array<string>
 }
 
 export async function GET() {
     const results: Array<DayMenu> = []
 
-    for (let i = 0; i < 7; i++) {
+    for (let i = 6; i < 7; i++) {
         const date = new Date()
         date.setDate(date.getDate() + i)
 
@@ -32,29 +35,42 @@ export async function GET() {
 
 async function getEntrees(date: Date): Promise<DayMenu> {
     const lunchResults = await fetchRowsInTable({
-        date: `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`,
+        date,
         lunch: true,
     })
     const lunchEntrees = pullEntreesFromRows(lunchResults)
 
     const dinnerResults = await fetchRowsInTable({
-        date: `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`,
+        date,
         lunch: false,
     })
+
     const dinnerEntrees = pullEntreesFromRows(dinnerResults)
+    const soup = pullSoupFromDinnerRows(dinnerResults)
 
     return {
         lunch: lunchEntrees,
         dinner: dinnerEntrees,
+        soup,
         date,
     }
 }
 
-function fetchRowsInTable({ date, lunch }: { date: string; lunch: boolean }): Promise<Array<string>> {
-    const meal = lunch ? "1" : "2"
+function fetchRowsInTable({ date, lunch }: { date: Date; lunch: boolean }): Promise<Array<string>> {
+    const meal =
+        date.getDay() === 0
+            ? lunch
+                ? 0 // when sunday, lunch is meal 0
+                : 1
+            : lunch
+            ? 1 // when not sunday, lunch is meal 1
+            : 2
+    const dateString = `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`
 
     return axios
-        .get(`https://www.foodpro.huds.harvard.edu/foodpro/menu_items.asp?date=${date}&type=05&meal=${meal}`)
+        .get(
+            `https://www.foodpro.huds.harvard.edu/foodpro/menu_items.asp?date=${dateString}&type=${HUDS_MENU_TYPE}&meal=${meal}`,
+        )
         .then((res) => {
             const html = res.data
             const $ = load(html)
@@ -88,4 +104,13 @@ function pullEntreesFromRows(rows: Array<string>): Array<string> {
     if (entreesIndex === -1 || vegVeganIndex === -1) return []
 
     return rows.slice(entreesIndex + 1, vegVeganIndex)
+}
+
+function pullSoupFromDinnerRows(rows: Array<string>): Array<string> {
+    const soupIndex = rows.indexOf("Today's Soup")
+    const saladBar = rows.indexOf("Salad Bar")
+
+    if (soupIndex === -1 || saladBar === -1) return []
+
+    return rows.slice(soupIndex + 1, saladBar)
 }

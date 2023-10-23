@@ -12,6 +12,7 @@ type DayMenu = {
     date: Date
     lunch: Array<string>
     dinner: Array<string>
+    soup: Array<string>
 }
 
 const RenderDishesCell = ({ dishes }: { dishes: Array<string> }) => {
@@ -55,6 +56,13 @@ const columns: GridColDef<DayMenu>[] = [
         renderCell: ({ row }) => <RenderDishesCell dishes={row.dinner} />,
         sortable: false,
     },
+    {
+        field: "soup",
+        headerName: "Soup",
+        flex: 2,
+        renderCell: ({ row }) => <RenderDishesCell dishes={row.soup} />,
+        sortable: false,
+    },
 ]
 
 export default function Home() {
@@ -71,6 +79,7 @@ export default function Home() {
                         date: new Date(jsonDay.date),
                         lunch: jsonDay.lunch,
                         dinner: jsonDay.dinner,
+                        soup: jsonDay.soup,
                     }
                     return day
                 })
