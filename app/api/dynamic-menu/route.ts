@@ -30,7 +30,7 @@ export async function GET() {
     )
 }
 
-export async function getEntrees(date: Date): Promise<DayMenu> {
+async function getEntrees(date: Date): Promise<DayMenu> {
     const lunchResults = await fetchRowsInTable({
         date: `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`,
         lunch: true,
