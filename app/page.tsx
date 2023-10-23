@@ -111,9 +111,6 @@ export default function Home() {
                     <Grid container gap={1} direction="column" justifyContent="center" alignItems="center">
                         <CircularProgress />
                         <Typography variant="body1">Loading...</Typography>
-                        <Typography variant="body2" fontStyle="italic">
-                            This typically takes ~10 seconds.
-                        </Typography>
                     </Grid>
                 ) : (
                     <DataGrid
