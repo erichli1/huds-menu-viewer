@@ -1,9 +1,9 @@
 "use client"
 
-import { CircularProgress, Container, Grid, List, ListItem, Typography } from "@mui/material"
+import { CircularProgress, Container, Divider, Grid, List, ListItem, Typography } from "@mui/material"
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import axios from "axios"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 const DAYS_OF_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
@@ -65,9 +65,72 @@ const columns: GridColDef<DayMenu>[] = [
     },
 ]
 
+function getWindowDimensions() {
+    if (typeof window === "undefined") return { width: 0, height: 0 }
+
+    const { innerWidth: width, innerHeight: height } = window
+    return {
+        width,
+        height,
+    }
+}
+
+function useWindowDimensions() {
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions())
+
+    useEffect(() => {
+        function handleResize() {
+            setWindowDimensions(getWindowDimensions())
+        }
+
+        window.addEventListener("resize", handleResize)
+        return () => window.removeEventListener("resize", handleResize)
+    }, [])
+
+    return windowDimensions
+}
+
+const RenderDishesForMobile = ({ title, dishes }: { title: string; dishes: Array<string> }) => (
+    <Grid container direction="row">
+        <Grid item xs={3}>
+            <Typography variant="body2" fontStyle="italic">
+                {title}
+            </Typography>
+        </Grid>
+        <Grid item xs={9}>
+            {dishes.map((item: string, index: number) => (
+                <Typography variant="body2" key={index}>
+                    {item}
+                </Typography>
+            ))}
+        </Grid>
+    </Grid>
+)
+
+const RenderMobileDayComponent = ({ day }: { day: DayMenu }) => (
+    <Container>
+        <Typography variant="body1" fontWeight="bold">
+            {day.date.toDateString()}
+        </Typography>
+        <Grid container direction="column" gap={1}>
+            <Grid container direction="row">
+                <RenderDishesForMobile title="Soup" dishes={day.soup} />
+            </Grid>
+            <Grid container direction="row">
+                <RenderDishesForMobile title="Lunch" dishes={day.lunch} />
+            </Grid>
+            <Grid container direction="row">
+                <RenderDishesForMobile title="Dinner" dishes={day.dinner} />
+            </Grid>
+            <Divider />
+        </Grid>
+    </Container>
+)
+
 export default function Home() {
     const [loading, setLoading] = useState<boolean>(true)
     const [data, setData] = useState<Array<DayMenu>>([])
+    const { width } = useWindowDimensions()
 
     if (loading) {
         axios
@@ -95,18 +158,21 @@ export default function Home() {
         //         date: new Date("10-23-2023"),
         //         lunch: ["chicken", "soup"],
         //         dinner: ["beef", "brisket"],
+        //         soup: [],
         //     },
         //     {
         //         id: 2,
         //         date: new Date("10-24-2023"),
         //         lunch: ["chicken", "soup"],
         //         dinner: ["beef", "brisket"],
+        //         soup: [],
         //     },
         //     {
         //         id: 3,
         //         date: new Date("10-25-2023"),
         //         lunch: ["chicken", "soup"],
         //         dinner: ["beef", "brisket"],
+        //         soup: [],
         //     },
         // ])
         // setLoading(false)
@@ -120,6 +186,13 @@ export default function Home() {
                     <Grid container gap={1} direction="column" justifyContent="center" alignItems="center">
                         <CircularProgress />
                         <Typography variant="body1">Loading...</Typography>
+                    </Grid>
+                ) : width < 600 ? (
+                    <Grid container gap={1} direction="column">
+                        <Divider />
+                        {data.map((day: DayMenu, index: number) => (
+                            <RenderMobileDayComponent day={day} key={index} />
+                        ))}
                     </Grid>
                 ) : (
                     <DataGrid
