@@ -31,25 +31,29 @@ const columns: GridColDef<DayMenu>[] = [
         field: "date",
         headerName: "Date",
         flex: 1,
-        valueGetter: ({ row }) =>
+        renderCell: ({ row }) =>
             DAYS_OF_WEEK[row.date.getUTCDay()].concat(
                 " ",
                 (row.date.getUTCMonth() + 1).toString(),
                 "/",
                 row.date.getUTCDate().toString(),
             ),
+        valueGetter: ({ row }) => row.date.getTime(),
+        sortable: false,
     },
     {
         field: "lunch",
         headerName: "Lunch",
         flex: 2,
         renderCell: ({ row }) => <RenderDishesCell dishes={row.lunch} />,
+        sortable: false,
     },
     {
         field: "dinner",
         headerName: "Dinner",
         flex: 2,
         renderCell: ({ row }) => <RenderDishesCell dishes={row.dinner} />,
+        sortable: false,
     },
 ]
 
@@ -79,7 +83,19 @@ export default function Home() {
         // setData([
         //     {
         //         id: 1,
-        //         date: new Date(),
+        //         date: new Date("10-23-2023"),
+        //         lunch: ["chicken", "soup"],
+        //         dinner: ["beef", "brisket"],
+        //     },
+        //     {
+        //         id: 2,
+        //         date: new Date("10-24-2023"),
+        //         lunch: ["chicken", "soup"],
+        //         dinner: ["beef", "brisket"],
+        //     },
+        //     {
+        //         id: 3,
+        //         date: new Date("10-25-2023"),
         //         lunch: ["chicken", "soup"],
         //         dinner: ["beef", "brisket"],
         //     },
