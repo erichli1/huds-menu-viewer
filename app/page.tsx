@@ -15,6 +15,15 @@ type DayMenu = {
     soup: Array<string>
 }
 
+const renderDate = (date: Date) => {
+    return DAYS_OF_WEEK[date.getUTCDay()].concat(
+        " ",
+        (date.getUTCMonth() + 1).toString(),
+        "/",
+        date.getUTCDate().toString(),
+    )
+}
+
 const RenderDishesCell = ({ dishes }: { dishes: Array<string> }) => {
     return (
         <List>
@@ -32,13 +41,7 @@ const columns: GridColDef<DayMenu>[] = [
         field: "date",
         headerName: "Date",
         flex: 1,
-        renderCell: ({ row }) =>
-            DAYS_OF_WEEK[row.date.getUTCDay()].concat(
-                " ",
-                (row.date.getUTCMonth() + 1).toString(),
-                "/",
-                row.date.getUTCDate().toString(),
-            ),
+        renderCell: ({ row }) => renderDate(row.date),
         valueGetter: ({ row }) => row.date.getTime(),
         sortable: false,
     },
@@ -110,7 +113,7 @@ const RenderDishesForMobile = ({ title, dishes }: { title: string; dishes: Array
 const RenderMobileDayComponent = ({ day }: { day: DayMenu }) => (
     <Container>
         <Typography variant="body1" fontWeight="bold">
-            {day.date.toDateString()}
+            {renderDate(day.date)}
         </Typography>
         <Grid container direction="column" gap={1}>
             <Grid container direction="row">
