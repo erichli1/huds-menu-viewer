@@ -15,7 +15,16 @@ type DayMenu = {
     soup: Array<string>
 }
 
-const renderDate = (date: Date) => {
+const dateIsToday = (date: Date) => {
+    const today = new Date()
+    return (
+        date.getUTCFullYear() === today.getFullYear() &&
+        date.getUTCMonth() === today.getMonth() &&
+        date.getUTCDate() === today.getDate()
+    )
+}
+
+const getDateString = (date: Date) => {
     return DAYS_OF_WEEK[date.getUTCDay()].concat(
         " ",
         (date.getUTCMonth() + 1).toString(),
@@ -24,12 +33,18 @@ const renderDate = (date: Date) => {
     )
 }
 
-const RenderDishesCell = ({ dishes }: { dishes: Array<string> }) => {
+const renderDate = (date: Date) => {
+    if (dateIsToday(date)) return <strong>{getDateString(date)}</strong>
+    
+    return getDateString(date)
+}
+
+const RenderDishesCell = ({ date, dishes }: { date: Date, dishes: Array<string> }) => {
     return (
         <List>
             {dishes.map((item: string, index: number) => (
                 <ListItem disablePadding key={index}>
-                    - {item}
+                    {dateIsToday(date) ? <strong>- {item}</strong> : <>- {item}</>}
                 </ListItem>
             ))}
         </List>
@@ -49,21 +64,21 @@ const columns: GridColDef<DayMenu>[] = [
         field: "lunch",
         headerName: "Lunch",
         flex: 2,
-        renderCell: ({ row }) => <RenderDishesCell dishes={row.lunch} />,
+        renderCell: ({ row }) => <RenderDishesCell date={row.date} dishes={row.lunch} />,
         sortable: false,
     },
     {
         field: "dinner",
         headerName: "Dinner",
         flex: 2,
-        renderCell: ({ row }) => <RenderDishesCell dishes={row.dinner} />,
+        renderCell: ({ row }) => <RenderDishesCell date={row.date} dishes={row.dinner} />,
         sortable: false,
     },
     {
         field: "soup",
         headerName: "Soup",
         flex: 2,
-        renderCell: ({ row }) => <RenderDishesCell dishes={row.soup} />,
+        renderCell: ({ row }) => <RenderDishesCell date={row.date} dishes={row.soup} />,
         sortable: false,
     },
 ]

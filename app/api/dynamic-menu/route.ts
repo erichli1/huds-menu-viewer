@@ -29,8 +29,11 @@ export async function GET() {
         },
         {
             status: 200,
+            headers: {
+                "Cache-Control": "s-maxage=86400, stale-while-revalidate",
+            },
         },
-    )
+    );
 }
 
 async function getEntrees(date: Date): Promise<DayMenu> {
