@@ -33,9 +33,7 @@ export async function GET(request: NextRequest) {
         {
             status: 200,
             headers: {
-                "Cache-Control": "max-age=0",
-                "CDN-Cache-Control": "max-age=0",
-                "Vercel-CDN-Cache-Control": "max-age=0",
+                "Cache-Control": "s-maxage=60",
             },
         },
     )
