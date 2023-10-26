@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
         {
             status: 200,
             headers: {
-                "Cache-Control": "s-maxage=64800, stale-while-revalidate",
+                "Cache-Control": "s-maxage=15, stale-while-revalidate",
             },
         },
     )
