@@ -23,22 +23,19 @@ export async function GET() {
         })
     }
 
-    const response = NextResponse.json({ body: results }, { status: 200 })
-    response.headers.set("cache-control", "max-age=0, s-maxage=1")
-    // console.log(response.headers.get("age"))
-    return response
-
-    // return NextResponse.json(
-    //     {
-    //         body: results,
-    //     },
-    //     {
-    //         status: 200,
-    //         headers: {
-    //             "cache-control": "s-maxage=86400",
-    //         },
-    //     },
-    // )
+    return NextResponse.json(
+        {
+            body: results,
+        },
+        {
+            status: 200,
+            headers: {
+                "Cache-Control": "max-age=0",
+                "CDN-Cache-Control": "max-age=0",
+                "Vercel-CDN-Cache-Control": "max-age=0",
+            },
+        },
+    )
 }
 
 async function getEntrees(date: Date): Promise<DayMenu> {
