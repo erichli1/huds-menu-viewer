@@ -23,17 +23,21 @@ export async function GET() {
         })
     }
 
-    return NextResponse.json(
-        {
-            body: results,
-        },
-        {
-            status: 200,
-            headers: {
-                "cache-control": "s-maxage=0",
-            },
-        },
-    )
+    const response = NextResponse.json({ body: results }, { status: 200 })
+    response.headers.set("cache-control", "s-maxage=0")
+    return response
+
+    // return NextResponse.json(
+    //     {
+    //         body: results,
+    //     },
+    //     {
+    //         status: 200,
+    //         headers: {
+    //             "cache-control": "s-maxage=86400",
+    //         },
+    //     },
+    // )
 }
 
 async function getEntrees(date: Date): Promise<DayMenu> {
