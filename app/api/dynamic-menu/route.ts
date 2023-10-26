@@ -13,12 +13,12 @@ type DayMenu = {
 }
 
 export async function GET(request: NextRequest) {
-    const params = url.parse(request.url, true).query
+    // const params = url.parse(request.url, true).query
 
     const results: Array<DayMenu> = []
 
     for (let i = 0; i < 7; i++) {
-        const date = new Date((params.date as string) ?? Date.now())
+        const date = new Date()
         date.setDate(date.getDate() + i)
 
         await getEntrees(date).then((res) => {
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
         {
             status: 200,
             headers: {
-                "Cache-Control": "s-maxage=60",
+                "Cache-Control": "s-maxage=30",
             },
         },
     )
