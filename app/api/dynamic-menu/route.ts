@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import axios, { AxiosError } from "axios"
 import { load } from "cheerio"
+import url from "url"
 
 const HUDS_MENU_TYPE = 14 // 14 is default, 05 is smaller view with only entrees
 
@@ -11,7 +12,9 @@ type DayMenu = {
     soup: Array<string>
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+    const params = url.parse(request.url, true).query
+
     const results: Array<DayMenu> = []
 
     for (let i = 0; i < 7; i++) {
@@ -23,22 +26,17 @@ export async function GET() {
         })
     }
 
-    const response = NextResponse.json({ body: results }, { status: 200 })
-    response.headers.set("cache-control", "max-age=0, s-maxage=1")
-    // console.log(response.headers.get("age"))
-    return response
-
-    // return NextResponse.json(
-    //     {
-    //         body: results,
-    //     },
-    //     {
-    //         status: 200,
-    //         headers: {
-    //             "cache-control": "s-maxage=86400",
-    //         },
-    //     },
-    // )
+    return NextResponse.json(
+        {
+            body: results,
+        },
+        {
+            status: 200,
+            headers: {
+                "Cache-Control": "s-maxage=64800",
+            },
+        },
+    )
 }
 
 async function getEntrees(date: Date): Promise<DayMenu> {
