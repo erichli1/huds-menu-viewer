@@ -30,10 +30,10 @@ export async function GET() {
         {
             status: 200,
             headers: {
-                "Cache-Control": "s-maxage=86400, stale-while-revalidate",
+                "cache-control": "s-maxage=0",
             },
         },
-    );
+    )
 }
 
 async function getEntrees(date: Date): Promise<DayMenu> {
