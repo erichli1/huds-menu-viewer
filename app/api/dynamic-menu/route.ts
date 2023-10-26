@@ -13,7 +13,7 @@ type DayMenu = {
 }
 
 export async function GET(request: NextRequest) {
-    // const params = url.parse(request.url, true).query
+    const params = url.parse(request.url, true).query
 
     const results: Array<DayMenu> = []
 
