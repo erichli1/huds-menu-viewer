@@ -15,16 +15,14 @@ type DayMenu = {
 export async function GET(request: NextRequest) {
     const params = url.parse(request.url, true).query
 
-    const results: Array<DayMenu> = []
-
-    for (let i = 0; i < 7; i++) {
+    const promises = Array.from({ length: 7 }, (_, i) => {
         const date = new Date()
         date.setDate(date.getDate() + i)
 
-        await getEntrees(date).then((res) => {
-            results.push(res)
-        })
-    }
+        return getDailyResultPromises(date).then((result) => processDailyResults(date, result))
+    })
+
+    const results = await Promise.all(promises)
 
     return NextResponse.json(
         {
@@ -39,18 +37,13 @@ export async function GET(request: NextRequest) {
     )
 }
 
-async function getEntrees(date: Date): Promise<DayMenu> {
-    const lunchResults = await fetchRowsInTable({
-        date,
-        lunch: true,
-    })
+async function getDailyResultPromises(date: Date): Promise<Array<Array<string>>> {
+    return Promise.all([fetchRowsInTable({ date, lunch: true }), fetchRowsInTable({ date, lunch: false })])
+}
+
+function processDailyResults(date: Date, [lunchResults, dinnerResults]: Array<Array<string>>): DayMenu {
     const lunchEntrees = pullEntreesFromRows(lunchResults)
     if (date.getDay() === 0 && lunchEntrees.length !== 0) lunchEntrees.push("Brunch")
-
-    const dinnerResults = await fetchRowsInTable({
-        date,
-        lunch: false,
-    })
 
     const dinnerEntrees = pullEntreesFromRows(dinnerResults)
     const soup = pullSoupFromDinnerRows(dinnerResults)
