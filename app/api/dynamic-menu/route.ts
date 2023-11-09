@@ -4,6 +4,28 @@ import { load } from "cheerio"
 import url from "url"
 
 const HUDS_MENU_TYPE = 14 // 14 is default, 05 is smaller view with only entrees
+const POSSIBLE_HEADERS = [
+    "Today's Soup",
+    "Salad Bar",
+    "Entrees",
+    "Veg,Vegan",
+    "Starch And Potatoes",
+    "Vegetables",
+    "Plant protein",
+    "Desserts",
+    "Brown Rice station",
+    "Bistro Bowl",
+    "Fresh Fruit",
+    "Whole Grain Pasta Bar",
+    "Brain Break",
+    "Delish",
+    "Chili Bar",
+    "Fresh Fruit",
+    "Sand/ Deli",
+    "Halal",
+    "Sides",
+    "From the Grill",
+]
 
 type DayMenu = {
     date: Date
@@ -42,11 +64,13 @@ async function getDailyResultPromises(date: Date): Promise<Array<Array<string>>>
 }
 
 function processDailyResults(date: Date, [lunchResults, dinnerResults]: Array<Array<string>>): DayMenu {
-    const lunchEntrees = pullEntreesFromRows(lunchResults)
+    const lunchHeaderIndexes = getHeaderIndexes(lunchResults)
+    const lunchEntrees = pullSectionFromRows("Entrees", lunchResults, lunchHeaderIndexes)
     if (date.getDay() === 0 && lunchEntrees.length !== 0) lunchEntrees.push("Brunch")
 
-    const dinnerEntrees = pullEntreesFromRows(dinnerResults)
-    const soup = pullSoupFromDinnerRows(dinnerResults)
+    const dinnerHeaderIndexes = getHeaderIndexes(dinnerResults)
+    const dinnerEntrees = pullSectionFromRows("Entrees", dinnerResults, dinnerHeaderIndexes)
+    const soup = pullSectionFromRows("Today's Soup", dinnerResults, dinnerHeaderIndexes)
 
     return {
         lunch: lunchEntrees,
@@ -97,20 +121,38 @@ function fetchRowsInTable({ date, lunch }: { date: Date; lunch: boolean }): Prom
         })
 }
 
-function pullEntreesFromRows(rows: Array<string>): Array<string> {
-    const entreesIndex = rows.indexOf("Entrees")
-    const vegVeganIndex = rows.indexOf("Veg,Vegan")
+function getHeaderIndexes(rows: Array<string>): { [key: string]: number } {
+    const headerIndexes: { [key: string]: number } = {}
+    POSSIBLE_HEADERS.forEach((header) => {
+        headerIndexes[header] = rows.indexOf(header)
+    })
 
-    if (entreesIndex === -1 || vegVeganIndex === -1) return []
-
-    return rows.slice(entreesIndex + 1, vegVeganIndex)
+    return headerIndexes
 }
 
-function pullSoupFromDinnerRows(rows: Array<string>): Array<string> {
-    const soupIndex = rows.indexOf("Today's Soup")
-    const saladBar = rows.indexOf("Salad Bar")
+function pullSectionFromRows(
+    header: string,
+    rows: Array<string>,
+    headerIndexes: { [key: string]: number },
+): Array<string> {
+    const headerIndex = headerIndexes[header]
+    // console.log(headerIndex)
+    if (headerIndex === -1) return []
 
-    if (soupIndex === -1 || saladBar === -1) return []
+    // console.log(headerIndexes)
 
-    return rows.slice(soupIndex + 1, saladBar)
+    const sortedHeaderIndexes = Object.entries(headerIndexes)
+        .map(([_, value]) => value)
+        .sort((a, b) => a - b)
+
+    // console.log(sortedHeaderIndexes)
+
+    // If last header index, return the remaining rows
+    if (sortedHeaderIndexes.indexOf(headerIndex) + 1 === sortedHeaderIndexes.length) return rows.slice(headerIndex + 1)
+
+    // Otherwise, return rows between this and next header
+    const nextHeaderIndex = sortedHeaderIndexes[sortedHeaderIndexes.indexOf(headerIndex) + 1]
+    // console.log(nextHeaderIndex)
+    if (nextHeaderIndex === -1) return []
+    return rows.slice(headerIndex + 1, nextHeaderIndex)
 }
