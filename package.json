@@ -1,11 +1,11 @@
 {
     "name": "huds-menu-viewer",
     "packageManager": "yarn@4.0.0-rc.51",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "build": "prisma generate && next build",
+        "build": "next build",
         "start": "next start",
         "lint": "next lint"
     },
@@ -14,7 +14,6 @@
         "@emotion/styled": "^11.11.0",
         "@mui/material": "^5.14.14",
         "@mui/x-data-grid": "^6.16.3",
-        "@prisma/client": "5.4.2",
         "axios": "^1.5.1",
         "cheerio": "^1.0.0-rc.12",
         "next": "13.5.6",
@@ -28,7 +27,6 @@
         "eslint": "^8",
         "eslint-config-next": "13.5.6",
         "prettier": "^3.0.3",
-        "prisma": "^5.4.2",
         "typescript": "^5"
     }
 }
