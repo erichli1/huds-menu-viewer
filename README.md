@@ -1,36 +1,16 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## TLDR
+See Harvard's weekly undergraduate menu at [huds.vercel.app](https://huds.vercel.app/).
 
-## Getting Started
+## Problem
+**Harvard's dining hall (HUDS) website includes a lot of information that isn't necessary.** For instance, it lets me know every day that the salad bar has Baby Arugula, Black Beans, Cherry Tomatoes, Chick Peas, ..., Tabouleh Salad. However, the average user doesn't need to know this; they only need to know the entrees and soup (which are guaranteed to rotate on a daily basis).
 
-First, run the development server:
+**The HUDS website makes it hard to see the upcoming menu at once.** Currently, each meal (lunch vs dinner) and each day has a separate tab making 14 clicks if someone wants to see what this next week in the dining hall will look like. However, it's useful to know what days someone might want to prioritize going to the dining hall to get their favorite dish or eating out to avoid their least favorite dish.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Solution
+This webapp shows the next seven days' worth of soup, lunch entrees, and dinner entrees in a single page by scraping the HUDS website. The desktop view is rendered as a single table, and the mobile view is rendered in bullet point form.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Set up
+The webapp can be run locally with `yarn dev`. This project is deployed on Vercel.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
--   [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
--   [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Tech notes
+The API is cached with a policy to expire every 18 hours, ensuring that we get the updated menu for the next week every day. Note that "cache times are best-effort and not guaranteed" per [Vercel's edge caching guidelines](https://vercel.com/docs/edge-network/caching) so there are often more cache misses than my policy suggests.
