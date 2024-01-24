@@ -25,6 +25,7 @@ const POSSIBLE_HEADERS = [
     "Halal",
     "Sides",
     "From the Grill",
+    "Brunch",
 ]
 
 type DayMenu = {
@@ -81,14 +82,15 @@ function processDailyResults(date: Date, [lunchResults, dinnerResults]: Array<Ar
 }
 
 function fetchRowsInTable({ date, lunch }: { date: Date; lunch: boolean }): Promise<Array<string>> {
-    const meal =
-        date.getDay() === 0
-            ? lunch
-                ? 0 // when sunday, lunch is meal 0
-                : 1
-            : lunch
-            ? 1 // when not sunday, lunch is meal 1
-            : 2
+    // const meal =
+    //     date.getDay() === 0
+    //         ? lunch
+    //             ? 0 // when sunday, lunch is meal 0
+    //             : 1
+    //         : lunch
+    //         ? 1 // when not sunday, lunch is meal 1
+    //         : 2
+    const meal = lunch ? 1 : 2
     const dateString = `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`
 
     return axios
